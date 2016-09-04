@@ -29,7 +29,7 @@ ENV JDK_VERSION 1.8.0
 ENV JMETER_VERSION 2.13
 
 # Install  JDK
-RUN sudo yum install java-$JDK_VERSION-openjdk-devel.x86_64 && rm -rf /var/cache/yum
+RUN yum install java-$JDK_VERSION-openjdk-devel.x86_64 && rm -rf /var/cache/yum
 
 # Install JMeter
 RUN cd /var/lib && \
