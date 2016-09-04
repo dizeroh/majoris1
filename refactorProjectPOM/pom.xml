@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>performance-test-framework</artifactId>
+  <groupId>com.citrix.loadtest</groupId>
+  <version>1.0.2-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <description>
+    Parent project for executing JMeter performance suite with Jenkins reporting framework.
+    To execute JMeter Suite: "mvn clean verify -Pperformance" from the project root for your service test.
+    To deploy the project source for this Parent POM to internal repo:  > mvn clean deploy
+  </description>
+
+  <properties>
+    <jmeter-plugin.version>1.10.1</jmeter-plugin.version>
+    <shared-resources.version>1.0.2-SNAPSHOT</shared-resources.version>
+    <jmeter-plugins-standard.version>1.2.1</jmeter-plugins-standard.version>
+    <jmeter-plugins-extras-libs>1.1.3</jmeter-plugins-extras-libs>
+    <run-analysis>true</run-analysis>
+  </properties>
+
+  <distributionManagement>
+    <repository>
+      <id>libs-release-local</id>
+      <name>Releases</name>
+      <url>https://artifactory.prodwest.citrixsaassbe.net/artifactory/libs-release-local</url>
+    </repository>
+
+    <snapshotRepository>
+      <id>libs-snapshot-local</id>
+      <name>Snapshots</name>
+      <url>https://artifactory.prodwest.citrixsaassbe.net/artifactory/libs-snapshot-local</url>
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>internal</id>
+      <name>Artifactory Managed Internal Repository</name>
+      <url>https://artifactory.prodwest.citrixsaassbe.net/artifactory/libs-release-local</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>snapshots</id>
+      <name>Artifactory Managed Snapshot Repository</name>
+      <url>https://artifactory.prodwest.citrixsaassbe.net/artifactory/libs-snapshot-local</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+        <!--  Copy Shared Framework resources from Maven Artifact  -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-remote-resources-plugin</artifactId>
+            <version>1.5</version>
+            <configuration>
+                <resourceBundles>
+                    <resourceBundle>com.citrix.loadtest:shared-resources:${shared-resources.version}</resourceBundle>
+                </resourceBundles>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>initialize</phase>
+                    <goals>
+                        <goal>process</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>performance</id>
+      <build>
+        <plugins>
+
+          <!-- Arrange framework files -->
+          <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.7</version>
+            <executions>
+              <execution>
+                <id>copy-jmeter-libs</id>
+                <phase>process-test-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/jmeter</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${project.build.directory}/maven-shared-archive-resources/jmeter</directory>
+                      <filtering>false</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>copy-report-templates</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${basedir}/target/reports</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${project.build.directory}/maven-shared-archive-resources/reportTemplates</directory>
+                      <filtering>false</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+
+          <!--  Load project properties for test execution and create reports.properties-->
+          <plugin>
+            <!-- extended verions of maven properties plugin: http://site.kuali.org/maven/plugins/properties-maven-plugin/2.0.1/plugin-info.html -->
+            <groupId>org.kuali.maven.plugins</groupId>
+            <artifactId>properties-maven-plugin</artifactId>
+            <version>2.0.1</version>
+            <executions>
+              <execution>
+                <id>Read property files</id>
+                <phase>process-test-resources</phase>
+                <goals>
+                  <goal>read-project-properties</goal>
+                </goals>
+                <configuration>
+                  <locations>
+                    <location>${project.build.directory}/maven-shared-archive-resources/defaultProject.properties</location>
+                    <location>${project.basedir}/src/test/jmeter/project.properties</location>
+                  </locations>
+                </configuration>
+              </execution>
+              <execution>
+                <id>Create reports.properties</id>
+                <phase>process-test-resources</phase>
+                <goals>
+                  <goal>write-project-properties</goal>
+                </goals>
+                <configuration>
+                  <outputFile>${project.build.directory}/reports/reports.properties</outputFile>
+                  <!--  Omit unused properties which cause noise in log with 'command not found' message when sourced from .sh scripts   -->
+                  <excludes>shared-resources.version,showWarnings,project.build.sourceEncoding,jmeter-plugin*,maven.*</excludes>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- execute JMeter test -->
+          <plugin>
+            <groupId>com.lazerycode.jmeter</groupId>
+            <artifactId>jmeter-maven-plugin</artifactId>
+            <version>${jmeter-plugin.version}</version>
+
+            <!-- general configuration for all executions -->
+            <configuration>
+              <testFilesIncluded>
+                <testFilesIncluded>${test_script}</testFilesIncluded>
+              </testFilesIncluded>
+              <ignoreResultFailures>true</ignoreResultFailures>
+              <propertiesJMeter>
+                <log_level.jmeter>${jmeter_logLevel}</log_level.jmeter>
+              </propertiesJMeter>
+            </configuration>
+
+            <executions>
+
+              <!--  ## Warm Up Test ## - Optional warm up test phase used to fill caches, etc.  Uses separate set of properties  -->
+              <execution>
+                <!-- ## ToDo:  Confirm this execuction is conditional and doesn't execute tests when none configured.  ##
+                        ToDo:  Looks like it relies on warmup_threadMultiplier=0 so it executes w/ 0 threads.
+                        ToDo:  Want execution to be conditional.  Add to separate profile if needed  -->
+                <id>run-jmeter-warmup</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>jmeter</goal>
+                </goals>
+                <configuration>
+                  <resultsFileNameDateFormat>YYYY</resultsFileNameDateFormat>
+                  <testResultsTimestamp>false</testResultsTimestamp>
+                  <suppressJMeterOutput>true</suppressJMeterOutput>
+                  <resultsFileFormat>jtl</resultsFileFormat>
+
+                  <!-- JMETER JVM settings -->
+                  <jMeterProcessJVMSettings>
+                    <xms>${jmeter_jvm_xms}</xms>
+                    <xmx>${jmeter_jvm_xmx}</xmx>
+                    <arguments>
+                      <argument>-Xprof</argument>
+                      <argument>-Xfuture</argument>
+                    </arguments>
+                  </jMeterProcessJVMSettings>
+
+                  <!-- JMETER Plugins to add to /lib/ext directory -->
+                  <jmeterPlugins>
+                    <plugin>
+                      <groupId>kg.apc</groupId>
+                      <artifactId>jmeter-plugins</artifactId>
+                    </plugin>
+                    <plugin>
+                      <groupId>kg.apc</groupId>
+                      <artifactId>jmeter-plugins-extras-libs</artifactId>
+                    </plugin>
+                  </jmeterPlugins>
+
+                  <!-- JMETER remote agent configurations-->
+                  <remoteConfig>
+                    <startServersBeforeTests>${remoteConfig_startServersBeforeTest}</startServersBeforeTests>
+                    <serverList>${remoteConfig_serverList}</serverList>
+                    <stopServersAfterTests>${remoteConfig_stopServersAfterTests}</stopServersAfterTests>
+                  </remoteConfig>
+
+                  <!-- Properties available in JMeter test execution.  Can be set in project.properties  -->
+                  <propertiesUser>
+                    <!-- Suite Properties -->
+                    <testEnv>${testEnv}</testEnv>
+                    <testConfig>${testConfig}</testConfig>
+                    <jmeterResultsFile>${project.basedir}/target/jmeter/results/${jmeterResultsFile}</jmeterResultsFile>
+                    <outputFolder>${project.basedir}/target/reports/images</outputFolder>
+
+                    <!--  Threadgroup settings -->
+                    <threadMultiplier>${warmup_threadMultiplier}</threadMultiplier>
+                    <duration>${warmup_duration_Seconds}</duration>
+                    <startupDelay>${warmup_startupDelay_Seconds}</startupDelay>
+                    <rampUp>${warmup_rampUp_Seconds}</rampUp>
+                    <loopCount>${warmup_loopCount}</loopCount> <!-- // Default is -1 (forever) // -->
+                    <throughput>${warmup_throughput_ReqPerMin}</throughput>
+
+                    <!-- Graphing Settings -->
+                    <graphs_width>${graphs_width_Pixels}</graphs_width>
+                    <graphs_height>${graphs_height_Pixels}</graphs_height>
+                    <graphs_numberOfPointsInRow>${graphs_numberOfPointsInRow}</graphs_numberOfPointsInRow>
+                    <graphs_granulationTime>${graphs_granulationTime_ms}</graphs_granulationTime>
+
+                  </propertiesUser>
+                </configuration>
+              </execution>
+
+              <!--  ## Performance test ## - Execute performance test and generate results  -->
+              <execution>
+                <id>run-jmeter-test</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>jmeter</goal>
+                </goals>
+                <configuration>
+                  <resultsFileNameDateFormat>YYYY</resultsFileNameDateFormat>
+                  <testResultsTimestamp>false</testResultsTimestamp>
+                  <suppressJMeterOutput>true</suppressJMeterOutput>
+                  <resultsFileFormat>jtl</resultsFileFormat>  <!--  Defaults to xml.  csv possible and more compact-->
+
+                  <!-- Properties available in JMeter test execution.  Can be set in project.properties  -->
+                  <propertiesUser>
+                    <!-- Suite Properties -->
+                    <testEnv>${testEnv}</testEnv>
+                    <testConfig>${testConfig}</testConfig>
+                    <jmeterResultsFile>${project.basedir}/target/jmeter/results/${jmeterResultsFile}</jmeterResultsFile>
+                    <outputFolder>${project.basedir}/target/reports/images</outputFolder>
+                    <!-- <threadGroupName>test</threadGroupName>    ToDo: Confirm how this is used. Comment or remove...)-->
+
+                    <!--  Threadgroup settings -->
+                    <threadMultiplier>${test_threadMultiplier}</threadMultiplier>
+                    <duration>${test_duration_Seconds}</duration>
+                    <startupDelay>${test_startupDelay_Seconds}</startupDelay>
+                    <rampUp>${test_rampUp_Seconds}</rampUp>
+                    <loopCount>${test_loopCount}</loopCount> <!-- Default is -1 (forever) -->
+                    <throughput>${test_throughput_ReqPerMin}</throughput>
+
+                    <echo>test_threadMultiplier is "${test_threadMultiplier}"</echo>
+                    <echo> test_duration is "${test_duration_Seconds}"</echo>
+
+                    <!-- Graphing Settings -->
+                    <graphs_width>${graphs_width_Pixels}</graphs_width>
+                    <graphs_height>${graphs_height_Pixels}</graphs_height>
+                    <graphs_numberOfPointsInRow>${graphs_numberOfPointsInRow}</graphs_numberOfPointsInRow>
+                    <graphs_granulationTime>${graphs_granulationTime_ms}</graphs_granulationTime>
+                  </propertiesUser>
+
+                </configuration>
+              </execution>
+            </executions>
+
+            <dependencies>
+              <!-- To eliminate the ERROR [ERROR] 'dependencies.dependency.systemPath' for org.hyperic:sigar:jar must specify an absolute path but is ${basedir}/lib/sigar.jar @
+                   ?????? -->
+              <dependency>
+                <groupId>org.fusesource</groupId>
+                <artifactId>sigar</artifactId>
+                <version>1.6.4</version>
+              </dependency>
+
+              <!-- JMETER standard and extras plugin for graphs -->
+              <dependency>
+                <groupId>kg.apc</groupId>
+                <artifactId>jmeter-plugins-standard</artifactId>
+                <version>${jmeter-plugins-standard.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>kg.apc</groupId>
+                <artifactId>jmeter-plugins-extras-libs</artifactId>
+                <version>${jmeter-plugins-extras-libs}</version>
+              </dependency>
+              <!-- Plugins required to work with Grafana -->
+			  <dependency>
+    			<groupId>org.apache.commons</groupId>
+    			<artifactId>commons-math3</artifactId>
+    			<version>3.4.1</version>
+			  </dependency>
+			  <dependency>
+    			<groupId>org.apache.commons</groupId>
+    			<artifactId>commons-pool2</artifactId>
+    			<version>2.0</version>
+			  </dependency>
+			  <dependency>
+    			<groupId>org.slf4j</groupId>
+    			<artifactId>jcl-over-slf4j</artifactId>
+    			<version>1.7.5</version>
+			  </dependency>
+			  <dependency>
+    			<groupId>org.apache.commons</groupId>
+    			<artifactId>commons-lang3</artifactId>
+    		  	<version>3.3.2</version>
+			  </dependency>
+            </dependencies>
+
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>run-analysis</id>
+      <activation>
+        <property>
+          <name>run-analysis</name>
+          <value>${run-analysis}</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.lazerycode.jmeter</groupId>
+            <artifactId>jmeter-analysis-maven-plugin</artifactId>
+            <version>1.0.6</version>
+            <!-- For example usage see: https://github.com/afranken/jmeter-analysis-maven-plugin -->
+            <executions>
+              <execution>
+                <goals>
+                  <goal>analyze</goal>
+                </goals>
+                <phase>post-integration-test</phase>
+                <configuration>
+                  <source>${project.build.directory}/jmeter/results/${jmeterResultsFile}</source>   <!--  Needs to be XML format or a GZIPed XML format  -->
+                  <targetDirectory>${project.basedir}/target/reports</targetDirectory>
+                  <checkResult>
+                    <errors>
+                      <threshold>-1</threshold>
+                      <toleranceDirection>UPPER_LOWER_TOLERANCE</toleranceDirection>
+                      <tolerance>5</tolerance>
+                    </errors>
+                  </checkResult>
+
+                  <!--  Set<String> of sample names that should be processed when analysing a results file.  -->
+                  <sampleNames>
+                    <sampleName>sample</sampleName>
+                    <sampleName>httpSample</sampleName>
+                  </sampleNames>
+
+                  <processAllFilesFound>false</processAllFilesFound>
+                  <!-- <remoteResourcesFromUntilDateFormat>yyyy</remoteResourcesFromUntilDateFormat> -->
+                  <com.lazerycode.jmeter.analyzer.writer.DetailsToHtmlWriter/>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+
+    </profile>
+    <!--Multi agent load test with docker-->
+    <profile>
+        <id>multiAgentLoadtest</id>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
+                    <executions>
+                        <execution>
+                            <id>generateSources</id>
+                            <phase>generate-sources</phase>
+                            <configuration>
+                                <tasks>
+                                    <exec executable="sh" dir="${project.basedir}/${multi_agent_scripts_location}">
+                                        <arg value="run-jmeter-cloud.sh" />
+                                        <arg value="${project.basedir}/${jmeter_script_location}" />
+                                        <arg value="${number_of_jmeter_slaves}" />
+					<arg value="${grafana_enabled}"/>
+                                    </exec>
+                                </tasks>
+                            </configuration>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+
+  </profiles>
+
+</project>

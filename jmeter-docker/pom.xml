@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+      <groupId>com.citrix.loadtest</groupId>
+      <artifactId>performance-test-framework</artifactId>
+      <version>1.0.2-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.citrix.loadtest</groupId>
+    <artifactId>shared-resources</artifactId>
+    <version>1.0.2-SNAPSHOT</version>
+
+    <description>
+      Project for executing JMeter tests and result artifacts consumable by Jenkins plan.
+      This project has a default project.properties file and no JMeter suite.
+      We are leveraging the project to install JMeter application and plugins in order to create Docker image.
+      To run tests from this folder: mvn clean verify -Pperformance -Drun-analysis=false
+      JMeter app will be installed in target/jmeter/
+    </description>
+
+    <!-- ## repository URL specified here because internal dependencies aren't being resolved on Jenkins agents
+         ##   Will remove this when Jenkins issue is resolved -->
+    <repositories>
+      <repository>
+        <id>internal</id>
+        <name>Artifactory Managed Internal Repository</name>
+        <url>https://artifactory.prodwest.citrixsaassbe.net/artifactory/libs-release-local</url>
+        <releases>
+          <enabled>true</enabled>
+        </releases>
+        <snapshots>
+          <enabled>false</enabled>
+        </snapshots>
+      </repository>
+      <repository>
+        <id>snapshots</id>
+        <name>Artifactory Managed Snapshot Repository</name>
+        <url>https://artifactory.prodwest.citrixsaassbe.net/artifactory/libs-snapshot-local</url>
+        <releases>
+          <enabled>false</enabled>
+        </releases>
+        <snapshots>
+          <enabled>true</enabled>
+        </snapshots>
+      </repository>
+    </repositories>
+
+
+</project>
