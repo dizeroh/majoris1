@@ -4,12 +4,12 @@ MAINTAINER Srinivasa Bittla <srinivasa.bittla@citrix.com>
 
 # package installation
 RUN dnf update -qy && \
- dnf install -qy https://s3.amazonaws.com/influxdb/influxdb-0.9.4-1.x86_64.rpm && \
+ dnf install -qy https://s3.amazonaws.com/influxdb/influxdb-0.9.4-1.x86_64.rpm && \ 
  dnf install -qy https://grafanarel.s3.amazonaws.com/builds/grafana-2.1.3-1.x86_64.rpm && \
  dnf install -qy nginx && \
  dnf install -qy supervisor && \
  dnf install -qy cronie && \
- dnf install -qy nmap-ncat && \
+ dnf install -qy nmap-ncat 
 
 
 # influxdb

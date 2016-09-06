@@ -21,33 +21,33 @@
 
 
 
-FROM fedora
+FROM ubuntu:14.04
 
 MAINTAINER dizer.oh@gmail.com
 
 ENV JDK_VERSION 1.8.0
 ENV JMETER_VERSION 2.13
 
-# Install  JDK
-RUN yum install java-$JDK_VERSION-openjdk-devel.x86_64 && rm -rf /var/cache/yum
-
-# Install JMeter
-RUN cd /var/lib && \
-  curl http://psg.mtu.edu/pub/apache/jmeter/binaries/apache-jmeter-$JMETER_VERSION.tgz -o /var/lib/jmeter-$JMETER_VERSION.tgz && \
-  tar xf jmeter-$JMETER_VERSION.tgz && \
-  rm -f jmeter-$JMETER_VERSION.tgz
-
+RUN apt-get -qq update && \
+  apt-get install -y default-jre && \
+  rm -rf /var/lib/apt/lists/* && \
+  apt-get install tar && \
+  apt-get update && \ 
+  apt-cache search wget  && \
+  apt-get install -y wget && \
+  wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-$JMETER_VERSION.tgz && \
+  tar -xvf apache-jmeter-$JMETER_VERSION.tgz && \
+  rm -f apache-jmeter-$JMETER_VERSION.tgz && \
+  mv apache-jmeter-$JMETER_VERSION /var/lib/jmeter 
+  
 # Use a predefined configuration.  This sets the contract for connecting to jmeter servers.
-ADD jmeter.properties /var/lib/apache-jmeter-$JMETER_VERSION/bin/
-
-
-# Add the JMeter folder in docker image
-# ADD target/jmeter /var/lib/jmeter/
-
+ADD jmeter.properties /var/lib/jmeter/bin/
 
 #Replace ApacheJMeter_core-2.13.jar withe the custom jar ApacheJMeter_core.jar to get the custom counters for grafana
 RUN rm -f /var/lib/jmeter/lib/ext/ApacheJMeter_core-$JMETER_VERSION.jar
-ADD ApacheJMeter_core.jar /var/lib/jmeter/lib/ext
+ADD addons/ApacheJMeter_core.jar /var/lib/jmeter/lib/ext
+ADD addons/cmdrunner-1.0.2.jar /var/lib/jmeter/lib/ext
+Add addons/jmeter-plugins-extras-libs-1.1.3.jar /var/lib/jmeter/lib/ext
 
 #Add user.properties for creating a database in grafana
 ADD user.properties /var/lib/jmeter/bin
