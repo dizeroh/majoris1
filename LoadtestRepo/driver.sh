@@ -27,7 +27,7 @@
 
 . ${PWD}/docker.properties
 
-# Load Jmeter properties and docker properties with the file  multiAgentProject.properties
+# Load Jmeter properties and docker properties with the file  majoris.properties
 
 . ${PWD}/majoris.properties
 
@@ -168,8 +168,8 @@ do
 		n) NUM_SERVERS=${OPTARG} ;;
 		s) JMX_SCRIPT=$(readlink -f ${OPTARG}) ;;
 		p) JMTR_PROP=$(readlink -f ${OPTARG}) ;;
+		g) GRAFANA_EN=${OPTARG} ;;		
 		j) JMTR_PATH=${OPTARG} ;;
-		g) GRAFANA_EN=${OPTARG} ;;
 		w) CWD=$(readlink -f ${OPTARG}) ;;
 		:) echo "The -${OPTARG} option requires a parameter"
 			 exit 1 ;;
@@ -179,11 +179,11 @@ do
 done
 shift $((OPTIND -1))
 
-# Load Jmeter properties and docker properties with the file  multiAgentProject.properties
+# Load Jmeter properties and docker properties with the file  majoris.properties
 #. ${JMTR_PROP}
 
 echo "The log directory: ${LOGDIR}"
-JMX_SCRIPT=${test_script} # reads the jmeter script file from multiAgentProject.properties
+JMX_SCRIPT=${test_script} # reads the jmeter script file from majoris.properties
 #
 # Validate environment
 validate_env
