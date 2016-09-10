@@ -5,11 +5,11 @@ if [[ "$#" -ne 3 ]]; then
 fi
 
 
-. ${1}/project.properties
+. ${1}/majoris.properties
 
-cp ${1}/project.properties .
+cp ${1}/majoris.properties .
 echo "grafana enabled choice is : ${3}"
 
 rm -rf logs.bak
 chmod 777 driver.sh
-./driver.sh -p ${1}/project.properties  -n ${2} -j ${JMTR_PATH} -g ${3}
+./driver.sh -p ${1}/majoris.properties  -n ${2} -j ${JMTR_PATH} -g ${3}
