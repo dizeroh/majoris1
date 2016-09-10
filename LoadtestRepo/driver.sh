@@ -25,7 +25,11 @@
 # The environment
 # export DOCKER_HOST=tcp://104.236.28.252:2376
 
-. docker.properties
+#. docker.properties
+
+# Load Jmeter properties and docker properties with the file  multiAgentProject.properties
+
+. ${PWD}/project.properties
 
 echo "The log directory: ${LOGDIR}"
 
@@ -35,16 +39,16 @@ function validate_env() {
 		usage
 		exit 1
 	fi
-	if [[ ! -d ${DATADIR} ]] ; then
-	  echo "The data directory '${DATADIR}' does not exist"
-		usage
-		exit 2
-	fi
-	if [[ ! -f ${JMX_SCRIPT} ]] ; then
-	  echo "The script file '${JMX_SCRIPT}' does not exist"
-		usage
-		exit 3
-	fi
+	#if [[ ! -d ${DATADIR} ]] ; then
+	#  echo "The data directory '${DATADIR}' does not exist"
+	#	usage
+	#	exit 2
+	#fi
+	#if [[ ! -f ${JMX_SCRIPT} ]] ; then
+	#  echo "The script file '${JMX_SCRIPT}' does not exist"
+	#	usage
+	#	exit 3
+	#fi
 	if [[ ${NUM_SERVERS} -lt 1 ]]; then
 		echo "Must start at least 1 JMX server."
 		usage
@@ -86,8 +90,8 @@ function start_servers() {
 		 #docker run --cidfile ${LOGDIR}/cid \
 		docker stop jmeter-slave-${HOST_READ_PORT}
 		docker rm -f jmeter-slave-${HOST_READ_PORT}
-	        docker run --name jmeter-slave-${HOST_READ_PORT} -d -p 0.0.0.0:${HOST_READ_PORT}:1099 -p 0.0.0.0:${HOST_WRITE_PORT}:60000 -v ${LOGDIR}:/logs -v ${DATADIR}:/data ${SLAVE_IMAGE} sh ${JMTR_PATH}/jmeter-server 1>/dev/null 2>&1
-		echo "docker run --name jmeter-slave-${HOST_READ_PORT} -d -p 0.0.0.0:${HOST_READ_PORT}:1099 -p 0.0.0.0:${HOST_WRITE_PORT}:60000 -v ${LOGDIR}:/logs -v ${DATADIR}:/data ${SLAVE_IMAGE} sh ${JMTR_PATH}/jmeter-server 1>/dev/null 2>&1"
+	        docker run --name jmeter-slave-${HOST_READ_PORT} -d -p 0.0.0.0:${HOST_READ_PORT}:1099 -p 0.0.0.0:${HOST_WRITE_PORT}:60000 -v ${LOGDIR}:/logs  ${SLAVE_IMAGE} sh ${JMTR_PATH}/bin/jmeter-server 1>/dev/null 2>&1
+		echo "docker run --name jmeter-slave-${HOST_READ_PORT} -d -p 0.0.0.0:${HOST_READ_PORT}:1099 -p 0.0.0.0:${HOST_WRITE_PORT}:60000 -v ${LOGDIR}:/logs  ${SLAVE_IMAGE} sh ${JMTR_PATH}/bin/jmeter-server 1>/dev/null 2>&1"
 		#docker ps
 
 		err=$?
@@ -175,11 +179,15 @@ do
 done
 shift $((OPTIND -1))
 
+# Load Jmeter properties and docker properties with the file  multiAgentProject.properties
+#. ${JMTR_PROP}
+
+echo "The log directory: ${LOGDIR}"
+JMX_SCRIPT=${test_script} # reads the jmeter script file from multiAgentProject.properties
 #
 # Validate environment
 validate_env
-#Load Jmeter properties
-. ${JMTR_PROP}
+
 #
 # Make sure the user is satisfied with the settings
 #confirm
@@ -205,7 +213,8 @@ if [[ ${GRAFANA_EN} == 'yes' ]]; then
 	docker stop grafana-docker
 	docker rm -f grafana-docker
 	docker run --name=grafana-docker -d -ti  -v /etc/localtime:/etc/localtime:ro -p 80:80 -p 2003:2003 -p 8086:8086 -p 8083:8083 ${GRAFANA_IMAGE}
-	echo "GRAFANA IS STARTED"
+	GRAFANA_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $(docker ps | grep 'grafana' | awk '{print $1}'))
+	echo "GRAFANA IS STARTED WITH THE IP ADDRESS: ${GRAFANA_IP}"
 else
 	docker stop grafana-docker
 fi
@@ -226,24 +235,26 @@ LOGDIR=${CWD}/logs/client
 
 mkdir -p ${LOGDIR}
 # docker run --cidfile ${LOGDIR}/cid \
-# docker run -d -v ${LOGDIR}:/logs -v ${DATADIR}:/data -v $(dirname ${JMX_SCRIPT}):/scripts ${MASTER_IMAGE} -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS}
+# docker run -d -v ${LOGDIR}:/logs -v $(dirname ${JMX_SCRIPT}):/scripts ${MASTER_IMAGE} -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS}
 
 if [[ ${warmup_threadMultiplier} != 0 ]] ; then
 	echo "RUNNING THE WARMUP TEST THROUGH A DOCKER CLIENT"
-	echo "docker run --name jmeter-master-warmup -v ${LOGDIR}:/logs -v ${DATADIR}:/data -v $(dirname ${JMX_SCRIPT}):/scripts ${MASTER_IMAGE} sh ${JMTR_PATH}/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/warmup_${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS} -GthreadMultiplier=${warmup_threadMultiplier} -GrampUp=${warmup_rampUp_Seconds} -GloopCount=${warmup_loopCount} -Gduration=${warmup_duration_Seconds} -GstartupDelay=${warmup_startupDelay_Seconds}"
+	echo "docker run --name jmeter-master-warmup -v ${LOGDIR}:/logs -v $(dirname ${JMX_SCRIPT}):/scripts ${MASTER_IMAGE} sh ${JMTR_PATH}/bin/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/warmup_${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS} -JthreadMultiplier=${warmup_threadMultiplier} -JrampUp=${warmup_rampUp_Seconds} -JloopCount=${warmup_loopCount} -Jduration=${warmup_duration_Seconds} -JstartupDelay=${warmup_startupDelay_Seconds} -JgrafanaIP=${GRAFANA_IP} -qsummariser.influx.ip=${GRAFANA_IP}"
 
 	docker stop jmeter-master-warmup
 	docker rm -f jmeter-master-warmup
-	docker run --name jmeter-master-warmup -v ${LOGDIR}:/logs -v ${DATADIR}:/data -v $(dirname ${JMX_SCRIPT}):/scripts ${MASTER_IMAGE} sh ${JMTR_PATH}/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/warmup_${jmeter_resultsFile} -LDEBUG -j /logs/warmup_jmeter.log -R${SERVER_IPS} -GthreadMultiplier=${warmup_threadMultiplier} -GrampUp=${warmup_rampUp_Seconds} -GloopCount=${warmup_loopCount} -Gduration=${warmup_duration_Seconds} -GstartupDelay=${warmup_startupDelay_Seconds}
+	docker run --name jmeter-master-warmup -v ${LOGDIR}:/logs -v $(dirname ${JMX_SCRIPT}):/scripts ${MASTER_IMAGE} sh ${JMTR_PATH}/bin/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/warmup_${jmeter_resultsFile} -LDEBUG -j /logs/warmup_jmeter.log -R${SERVER_IPS} -GthreadMultiplier=${warmup_threadMultiplier} -GrampUp=${warmup_rampUp_Seconds} -GloopCount=${warmup_loopCount} -Gduration=${warmup_duration_Seconds} -GstartupDelay=${warmup_startupDelay_Seconds} -GgrafanaIP=${GRAFANA_IP} -qsummariser.influx.ip=${GRAFANA_IP}
 	echo "WAITING FOR LOAD IMAGES TO BE RELEASED"
 #	sleep 60
 fi
 echo "RUNNING THE LOADTEST  THROUGH A DOCKER CLIENT"
-echo "docker run --name jmeter-master-test -v ${LOGDIR}:/logs -v ${DATADIR}:/data -v $(dirname ${JMX_SCRIPT}):/scripts ${MASTER_IMAGE} sh ${JMTR_PATH}/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS} -GthreadMultiplier=${test_threadMultiplier} -GrampUp=${test_rampUp_Seconds} -GloopCount=${test_loopCount} -Gduration=${test_duration_Seconds} -GstartupDelay=${test_startupDelay_Seconds}"
+echo "docker run --name jmeter-master-test -v ${LOGDIR}:/logs -${MASTER_IMAGE} sh ${JMTR_PATH}/bin/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS} -GthreadMultiplier=${test_threadMultiplier} -GrampUp=${test_rampUp_Seconds} -GloopCount=${test_loopCount} -Gduration=${test_duration_Seconds} -GstartupDelay=${test_startupDelay_Seconds} -GgrafanaIP=${GRAFANA_IP} -qsummariser.influx.ip=${GRAFANA_IP}"
 
 docker stop jmeter-master-test
 docker rm -f jmeter-master-test
-docker run --name jmeter-master-test -v ${LOGDIR}:/logs -v ${DATADIR}:/data -v $(dirname ${JMX_SCRIPT}):/scripts ${MASTER_IMAGE} sh ${JMTR_PATH}/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS} -GthreadMultiplier=${test_threadMultiplier} -GrampUp=${test_rampUp_Seconds} -GloopCount=${test_loopCount} -Gduration=${test_duration_Seconds} -GstartupDelay=${test_startupDelay_Seconds}
+#docker run --name jmeter-master-test -v ${LOGDIR}:/logs -v $(dirname ${JMX_SCRIPT}):/scripts ${MASTER_IMAGE} sh ${JMTR_PATH}/bin/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS} -GthreadMultiplier=${test_threadMultiplier} -GrampUp=${test_rampUp_Seconds} -GloopCount=${test_loopCount} -Gduration=${test_duration_Seconds} -GstartupDelay=${test_startupDelay_Seconds} -GgrafanaIP=${GRAFANA_IP} -qsummariser.influx.ip=${GRAFANA_IP}
+
+docker run --name jmeter-master-test -v ${LOGDIR}:/logs  ${MASTER_IMAGE} sh ${JMTR_PATH}/bin/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS} -GthreadMultiplier=${test_threadMultiplier} -GrampUp=${test_rampUp_Seconds} -GloopCount=${test_loopCount} -Gduration=${test_duration_Seconds} -GstartupDelay=${test_startupDelay_Seconds} -GgrafanaIP=${GRAFANA_IP} -qsummariser.influx.ip=${GRAFANA_IP}
 
 # stop all containers once the test is complete
 echo "STOPPING ALL THE CONTAINERS"

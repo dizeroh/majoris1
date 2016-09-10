@@ -1,13 +1,15 @@
 #!/bin/bash
+. $1/project.properties
+
 count=0
-echo "<html>" > reports/SynthesisReportGui.html
-echo "<head>" >> reports/SynthesisReportGui.html
-echo "<title>Summary Report</title>" >> reports/SynthesisReportGui.html
-echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"commonstyle.css\">" >> reports/SynthesisReportGui.html
-echo "</head>" >> reports/SynthesisReportGui.html
-echo "<body>" >> reports/SynthesisReportGui.html
-echo "<h1><b>Summary Report</b></h1>" >> reports/SynthesisReportGui.html
-echo "<table border=5 bordercolor=cyan>" >> reports/SynthesisReportGui.html
+echo "<html>" > ${reports_location}reports/SynthesisReportGui.html
+echo "<head>" >> ${reports_location}reports/SynthesisReportGui.html
+echo "<title>Summary Report</title>" >> ${reports_location}reports/SynthesisReportGui.html
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"commonstyle.css\">" >> ${reports_location}reports/SynthesisReportGui.html
+echo "</head>" >> ${reports_location}reports/SynthesisReportGui.html
+echo "<body>" >> ${reports_location}reports/SynthesisReportGui.html
+echo "<h1><b>Summary Report</b></h1>" >> ${reports_location}reports/SynthesisReportGui.html
+echo "<table border=5 bordercolor=cyan>" >> ${reports_location}reports/SynthesisReportGui.html
 
 col_header="Label,# Samples,Average,Min,Max,90%Line,StdDev,Error %,Throughput/sec,KB/sec,Avg. Bytes"
 while read line
@@ -22,17 +24,17 @@ do
 	
 	if [ $count == 0 ]
 	then
-		echo "<tr>" >> reports/SynthesisReportGui.html
+		echo "<tr>" >> ${reports_location}reports/SynthesisReportGui.html
 		echo $col_header | awk -F '[,]' '{for(i=1;i<12;i++) 
 		if (i==1)
 			print "\t<th height=\"30\">"$i"</th>";
 		else
 			print "\t<th height=30 width=100>"$i"</th>";
-		}' >> reports/SynthesisReportGui.html
+		}' >> ${reports_location}reports/SynthesisReportGui.html
 
 	else
-		echo "<tr class=\"$cls\">" >> reports/SynthesisReportGui.html
-		#echo $line | awk -F '[,]' '{for(i=1;i<12;i++) {print "\t<td>"$i"</td>";}}' >> reports/SynthesisReportGui.html 
+		echo "<tr class=\"$cls\">" >> ${reports_location}reports/SynthesisReportGui.html
+		#echo $line | awk -F '[,]' '{for(i=1;i<12;i++) {print "\t<td>"$i"</td>";}}' >> ${reports_location}reports/SynthesisReportGui.html 
 		echo $line | awk -F '[,]' '{for(i=1;i<12;i++)
 			if (i==1)
 				print "\t<td>",$i,"</td>"; 
@@ -42,12 +44,12 @@ do
 				printf "\t<td width=100>%3.2f",$i*100,"</td>";
 			else 
 				print "\t<td width=100>",$i,"</td>"; 
-			 }' >> reports/SynthesisReportGui.html
+			 }' >> ${reports_location}reports/SynthesisReportGui.html
 	fi
-	echo "</tr>" >> reports/SynthesisReportGui.html	
+	echo "</tr>" >> ${reports_location}reports/SynthesisReportGui.html	
 	((count++))
-done < reports/images/SynthesisReportGui.csv
-echo "</table>" >> reports/SynthesisReportGui.html
-echo "</body>" >> reports/SynthesisReportGui.html
-echo "</html>" >> reports/SynthesisReportGui.html
-#awk -F '[,]' '{for(i=1;i<12;i++) {print $i;}}' SynthesisReportGui.csv > reports/SynthesisReportGui.html
+done < ${reports_location}reports/images/SynthesisReportGui.csv
+echo "</table>" >> ${reports_location}reports/SynthesisReportGui.html
+echo "</body>" >> ${reports_location}reports/SynthesisReportGui.html
+echo "</html>" >> ${reports_location}reports/SynthesisReportGui.html
+#awk -F '[,]' '{for(i=1;i<12;i++) {print $i;}}' SynthesisReportGui.csv > ${reports_location}reports/SynthesisReportGui.html
