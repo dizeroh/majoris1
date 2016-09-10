@@ -29,7 +29,7 @@
 
 # Load Jmeter properties and docker properties with the file  multiAgentProject.properties
 
-. ${PWD}/project.properties
+. ${PWD}/majoris.properties
 
 echo "The log directory: ${LOGDIR}"
 
