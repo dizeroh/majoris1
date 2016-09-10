@@ -25,7 +25,7 @@
 # The environment
 # export DOCKER_HOST=tcp://104.236.28.252:2376
 
-#. docker.properties
+. ${PWD}/docker.properties
 
 # Load Jmeter properties and docker properties with the file  multiAgentProject.properties
 
