@@ -4,10 +4,12 @@ if [[ "$#" -ne 3 ]]; then
 	exit 1
 fi
 
-. ${1}/majoris.properties
 
+. ${1}/project.properties
+
+cp ${1}/project.properties .
 echo "grafana enabled choice is : ${3}"
 
 rm -rf logs.bak
 chmod 777 driver.sh
-./driver.sh -s ${1}/${test_script} -d ${1}/data -n ${2} -p ${1}/majoris.properties -j /var/lib/jmeter/bin -g ${3}
+./driver.sh -p ${1}/project.properties  -n ${2} -j ${JMTR_PATH} -g ${3}
