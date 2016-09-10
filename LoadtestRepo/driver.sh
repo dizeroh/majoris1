@@ -168,9 +168,10 @@ do
 		n) NUM_SERVERS=${OPTARG} ;;
 		s) JMX_SCRIPT=$(readlink -f ${OPTARG}) ;;
 		p) JMTR_PROP=$(readlink -f ${OPTARG}) ;;
-		g) GRAFANA_EN=${OPTARG} ;;		
 		j) JMTR_PATH=${OPTARG} ;;
 		w) CWD=$(readlink -f ${OPTARG}) ;;
+		g) GRAFANA_EN=${OPTARG} ;;		
+		
 		:) echo "The -${OPTARG} option requires a parameter"
 			 exit 1 ;;
 		?) echo "Invalid option: -${OPTARG}"
