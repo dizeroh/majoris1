@@ -35,6 +35,9 @@ RUN apt-get -qq update && \
   apt-get update && \ 
   apt-cache search wget  && \
   apt-get install -y wget && \
+  apt-get update && \
+  apt-cache search curl  && \
+  apt-get install -y curl && \
   wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-$JMETER_VERSION.tgz && \
   tar -xvf apache-jmeter-$JMETER_VERSION.tgz && \
   rm -f apache-jmeter-$JMETER_VERSION.tgz && \

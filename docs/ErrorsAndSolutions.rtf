@@ -46575,7 +46575,7 @@ docker run -v $\{WORKSPACE\}/LoadtestRepo/logs/client:/logs \\\par
 sh /shared-repo/generate-reports.sh /scripts\par
 \b TO RUN REPORTS ON COMMAND PROMPT\par
 \b0 docker run -v $\{PWD\}/LoadtestRepo/logs/client:/logs \\\par
--v $\{PWD\}/LoadtestRepo/reports:/reports \\\par
+-v $\{PWD\}/reports:/reports \\\par
 -v $\{PWD\}/LoadtestRepo:/shared-repo \\\par
 -v $\{PWD\}/SampleApp/jmeter-tests:/scripts jmeter-docker \\\par
 sh /shared-repo/generate-reports.sh /scripts\par
