@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Sample shell script to read and act on properties
 # source the properties:
 
@@ -16,7 +16,8 @@ cd ${CURR_DIR}
 #Generate the standalone reports using docker image
 #docker run -v ${LOGDIR}:${logs_location} -v ${REPDIR}:/reports -v ${SCRIPT_DIR}:/scripts ${MASTER_IMAGE} sh /reports/perfpagegraphs.sh /scripts
 
-sh ${reports_location}reports/perfpagegraphs.sh $1
+chmod 777 ${reports_location}reports/perfpagegraphs.sh
+.${reports_location}reports/perfpagegraphs.sh $1
 sh ${reports_location}reports/genjmdownloads.sh $1 
 sh ${reports_location}reports/csv2htmlsynth.sh $1 
 sh ${reports_location}reports/csv2htmlaggr.sh $1
