@@ -46557,8 +46557,11 @@ sudo groupadd -for -g 991 dockerhost\par
 \b Solution: \b0 sudo usermod -aG docker jenkins\par
 \par
 \b Issue\b0 :Cannot connect to the Docker daemon. Is the docker daemon running on this host?\par
-\b Solution\b0 : chmod 777 /var/run/docker.sock\par
+\b Solution\b0 : \par
+sudo service docker start\par
+sudo chmod 777 /var/run/docker.sock\par
+\par
 
-\pard\sa200\sl276\slmult1\par
+\pard\sa200\sl276\slmult1  docker run -v /home/ec2-user/majoris1/LoadtestRepo/logs/client:/logs -v /home/ec2-user/majoris1/SampleApp/jmeter-tests:/scripts jmeter-docker sh /var/lib/jmeter/bin/jmeter -n -t /scripts/ShopItForJenkins.jmx -l /logs/results.csv -LDEBUG  -JthreadMultiplier=2 -JrampUp=10 -JloopCount=-1 -Jduration=60 -JstartupDelay=0 -JgrafanaIP=172.17.0.2 -qsummariser.influx.ip=172.17.0.2\par
 }
  
