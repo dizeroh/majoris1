@@ -29,7 +29,7 @@ array=( AggregateReport SynthesisReport )
 for csvReport in "${array[@]}"
 do
         echo "CSV report - ${csvReport}"
-        java -jar ${JMTR_PATH}/lib/ext/cmdrunner-1.0.2.jar --tool Reporter --generate-csv ${reports_location}reports/images/${csvReport}Gui.csv --input-jtl  ${logs_location}/${jmeter_resultsFile} --plugin-type ${csvReport}
+        java -jar ${JMTR_PATH}/lib/ext/CMDRunner.jar --tool Reporter --generate-csv ${reports_location}reports/images/${csvReport}Gui.csv --input-jtl  ${logs_location}/${jmeter_resultsFile} --plugin-type ${csvReport}
 done
 
 #Generate page graphs and throughput graphs
@@ -65,7 +65,7 @@ do
                         echo $pageName
                         cat logs/${jmeter_resultsFile} | grep "${pageHeader}" > logs/temp_${jmeter_resultsFile}
                         #generate throughput graphs
-                        java -jar ${JMTR_PATH}/lib/ext/cmdrunner-1.0.2.jar --tool Reporter --generate-png ${reports_location}reports/images/Throughput-${pageName}.png --input-jtl  ${logs_location}/temp_${jmeter_resultsFile} --plugin-type TransactionsPerSecond --width $graphs_width_Pixels --height $graphs_height_Pixels --aggregate-rows no --paint-gradient no --paint-zeroing yes --paint-markers yes
+                        java -jar ${JMTR_PATH}/lib/ext/CMDRunner.jar --tool Reporter --generate-png ${reports_location}reports/images/Throughput-${pageName}.png --input-jtl  ${logs_location}/temp_${jmeter_resultsFile} --plugin-type TransactionsPerSecond --width $graphs_width_Pixels --height $graphs_height_Pixels --aggregate-rows no --paint-gradient no --paint-zeroing yes --paint-markers yes
 
                         #generate page response time graphs
                         java -jar ${JMTR_PATH}/lib/ext/CMDRunner.jar --tool Reporter --generate-png ${reports_location}reports/images/Page-${pageName}.png --input-jtl  ${logs_location}/temp_${jmeter_resultsFile} --plugin-type ResponseTimesOverTime --width $graphs_width_Pixels --height $graphs_height_Pixels --aggregate-rows no --paint-gradient no --paint-zeroing yes --paint-markers yes
