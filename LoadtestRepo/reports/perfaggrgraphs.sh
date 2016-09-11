@@ -1,6 +1,6 @@
 #!/bin/sh
 #call project properties
-. $1/project.properties
+. $1/majoris.properties
 
 #Aggregate graph names
 array=( ThreadsStateOverTime TimesVsThreads TransactionsPerSecond )

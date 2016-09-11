@@ -1,5 +1,5 @@
 
-. ${1}/project.properties # default jmeter and docker.properties included in multiAgentProject.properties
+. ${1}/majoris.properties # default jmeter and docker.properties included in multiAgentProject.properties
 #sh ${reports_location}docker.properties
 
 if [ "$#" -ne 1 ]

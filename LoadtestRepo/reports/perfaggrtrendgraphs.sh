@@ -1,6 +1,6 @@
 #!/bin/sh
 # source the properties:
-. $1/project.properties
+. $1/majoris.properties
 
 echo $projectlocation
 echo $jenkinsProjectUrl

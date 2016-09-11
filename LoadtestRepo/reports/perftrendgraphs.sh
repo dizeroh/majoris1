@@ -2,7 +2,7 @@
 
 #Source project properties
 
-. $1/project.properties
+. $1/majoris.properties
 
 count=1
 echo "<html>" > ${reports_location}reports/PerformanceTrendGraphs.html

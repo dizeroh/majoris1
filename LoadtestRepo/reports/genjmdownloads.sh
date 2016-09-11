@@ -1,6 +1,6 @@
 #!/bin/bash
 #use the project properties
-. $1/project.properties
+. $1/majoris.properties
 #logFile=$(echo $jmeter_resultsFile | awk -F '.' '{print $1".jmx.log"}')
 logFile=jmeter.log
 echo $logFile

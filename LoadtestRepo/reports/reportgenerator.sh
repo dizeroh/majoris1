@@ -2,7 +2,7 @@
 # Sample shell script to read and act on properties
 # source the properties:
 
-. $1/project.properties
+. $1/majoris.properties
 #. ${reports_location}docker.properties
 
 #Copy the files from results folder

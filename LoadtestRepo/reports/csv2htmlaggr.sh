@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $1/project.properties
+. $1/majoris.properties
 
 count=0
 echo "<html>" > ${reports_location}reports/AggregateReportGui.html

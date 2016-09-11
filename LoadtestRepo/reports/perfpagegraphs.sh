@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Source project properties
-. $1/project.properties
+. $1/majoris.properties
 
 #Generate Page Aggregate Graphs
 #Aggregate graph names
