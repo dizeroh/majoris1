@@ -9,7 +9,7 @@ then
 fi
 
 #cd target/jmeter/lib/ext/
-echo "java -jar CMDRunner.jar --tool Reporter --generate-png ../../../reports/images/Aggr-ThreadsStateOverTime.png --input-jtl  ../../results/$jmeter_resultsFile --plugin-type ThreadsStateOverTime --width $graphs_width_Pixels --height $graphs_height_Pixels --aggregate-rows yes --paint-gradient no --paint-zeroing yes --paint-markers yes"
+#echo "java -jar CMDRunner.jar --tool Reporter --generate-png ../../../reports/images/Aggr-ThreadsStateOverTime.png --input-jtl  ../../results/$jmeter_resultsFile --plugin-type ThreadsStateOverTime --width $graphs_width_Pixels --height $graphs_height_Pixels --aggregate-rows yes --paint-gradient no --paint-zeroing yes --paint-markers yes"
 #java -jar CMDRunner.jar --tool Reporter --generate-png ../../../reports/images/Aggr-ThreadsStateOverTime.png --input-jtl  ../../results/$jmeter_resultsFile --plugin-type ThreadsStateOverTime --width $graphs_width_Pixels --height $graphs_height_Pixels --aggregate-rows yes --paint-gradient no --paint-zeroing yes --paint-markers yes
 
 #The belo graph is already included as part of pagegraphs

@@ -1,4 +1,3 @@
-#!/bin/bash
 #!/bin/sh
 
 function server_ips() {

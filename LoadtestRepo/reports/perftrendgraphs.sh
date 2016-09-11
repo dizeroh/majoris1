@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #Source project properties
 

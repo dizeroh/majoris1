@@ -46560,8 +46560,27 @@ sudo groupadd -for -g 991 dockerhost\par
 \b Solution\b0 : \par
 sudo service docker start\par
 sudo chmod 777 /var/run/docker.sock\par
-\par
+\b DOCKER COMMAND FOR RUNNING THE TEST\par
 
-\pard\sa200\sl276\slmult1  docker run -v /home/ec2-user/majoris1/LoadtestRepo/logs/client:/logs -v /home/ec2-user/majoris1/SampleApp/jmeter-tests:/scripts jmeter-docker sh /var/lib/jmeter/bin/jmeter -n -t /scripts/ShopItForJenkins.jmx -l /logs/results.csv -LDEBUG  -JthreadMultiplier=2 -JrampUp=10 -JloopCount=-1 -Jduration=60 -JstartupDelay=0 -JgrafanaIP=172.17.0.2 -qsummariser.influx.ip=172.17.0.2\par
+\pard\sa200\sl276\slmult1\b0  docker run -v /home/ec2-user/majoris1/LoadtestRepo/logs/client:/logs -v /home/ec2-user/majoris1/SampleApp/jmeter-tests:/scripts jmeter-docker sh /var/lib/jmeter/bin/jmeter -n -t /scripts/ShopItForJenkins.jmx -l /logs/results.csv -LDEBUG  -JthreadMultiplier=2 -JrampUp=10 -JloopCount=-1 -Jduration=60 -JstartupDelay=0 -JgrafanaIP=172.17.0.2 -qsummariser.influx.ip=172.17.0.2\par
+\b JENKINS/COMMAND DRIVEN LOAD TEST EXECUTION \par
+\b0 cd ../LoadtestRepo\par
+echo "running run-jmeter-cloud.sh"\par
+\b JENKINS REPORTS GENERATION\par
+\b0 sh run-jmeter-cloud.sh ../SampleApp/jmeter-tests/ 1 yes \par
+docker run -v $\{WORKSPACE\}/LoadtestRepo/logs/client:/logs \\\par
+-v $\{WORKSPACE\}/LoadtestRepo/reports:/reports \\\par
+-v $\{WORKSPACE\}/LoadtestRepo:/shared-repo \\\par
+-v $\{WORKSPACE\}/SampleApp/jmeter-tests:/scripts jmeter-docker \\\par
+sh /shared-repo/generate-reports.sh /scripts\par
+\b TO RUN REPORTS ON COMMAND PROMPT\par
+\b0 docker run -v $\{PWD\}/LoadtestRepo/logs/client:/logs \\\par
+-v $\{PWD\}/LoadtestRepo/reports:/reports \\\par
+-v $\{PWD\}/LoadtestRepo:/shared-repo \\\par
+-v $\{PWD\}/SampleApp/jmeter-tests:/scripts jmeter-docker \\\par
+sh /shared-repo/generate-reports.sh /scripts\par
+\par
+\par
+\par
 }
  
