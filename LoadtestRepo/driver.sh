@@ -183,7 +183,7 @@ shift $((OPTIND -1))
 #. ${JMTR_PROP}
 
 echo "The log directory: ${LOGDIR}"
-JMX_SCRIPT=${test_script} # reads the jmeter script file from majoris.properties
+#JMX_SCRIPT=${test_script} # reads the jmeter script file from majoris.properties
 #
 # Validate environment
 validate_env
@@ -232,7 +232,7 @@ server_ips
 
 # Start the jmeter (client) container and connect to the servers
 LOGDIR=${CWD}/logs/client
-
+echo "JMX_SCRIPT :${JMX_SCRIPT}" 
 mkdir -p ${LOGDIR}
 # docker run --cidfile ${LOGDIR}/cid \
 # docker run -d -v ${LOGDIR}:/logs -v $(dirname ${JMX_SCRIPT}):/scripts ${MASTER_IMAGE} -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS}
