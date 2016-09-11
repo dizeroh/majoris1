@@ -248,13 +248,13 @@ if [[ ${warmup_threadMultiplier} != 0 ]] ; then
 #	sleep 60
 fi
 echo "RUNNING THE LOADTEST  THROUGH A DOCKER CLIENT"
-echo "docker run --name jmeter-master-test -v ${LOGDIR}:/logs -${MASTER_IMAGE} sh ${JMTR_PATH}/bin/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS} -GthreadMultiplier=${test_threadMultiplier} -GrampUp=${test_rampUp_Seconds} -GloopCount=${test_loopCount} -Gduration=${test_duration_Seconds} -GstartupDelay=${test_startupDelay_Seconds} -GgrafanaIP=${GRAFANA_IP} -qsummariser.influx.ip=${GRAFANA_IP}"
+echo "docker run --name jmeter-master-test -v ${LOGDIR}:/logs -v $(dirname ${JMX_SCRIPT}):/scripts -${MASTER_IMAGE} sh ${JMTR_PATH}/bin/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS} -GthreadMultiplier=${test_threadMultiplier} -GrampUp=${test_rampUp_Seconds} -GloopCount=${test_loopCount} -Gduration=${test_duration_Seconds} -GstartupDelay=${test_startupDelay_Seconds} -GgrafanaIP=${GRAFANA_IP} -qsummariser.influx.ip=${GRAFANA_IP}"
 
 docker stop jmeter-master-test
 docker rm -f jmeter-master-test
 #docker run --name jmeter-master-test -v ${LOGDIR}:/logs -v $(dirname ${JMX_SCRIPT}):/scripts ${MASTER_IMAGE} sh ${JMTR_PATH}/bin/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS} -GthreadMultiplier=${test_threadMultiplier} -GrampUp=${test_rampUp_Seconds} -GloopCount=${test_loopCount} -Gduration=${test_duration_Seconds} -GstartupDelay=${test_startupDelay_Seconds} -GgrafanaIP=${GRAFANA_IP} -qsummariser.influx.ip=${GRAFANA_IP}
 
-docker run --name jmeter-master-test -v ${LOGDIR}:/logs  ${MASTER_IMAGE} sh ${JMTR_PATH}/bin/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS} -GthreadMultiplier=${test_threadMultiplier} -GrampUp=${test_rampUp_Seconds} -GloopCount=${test_loopCount} -Gduration=${test_duration_Seconds} -GstartupDelay=${test_startupDelay_Seconds} -GgrafanaIP=${GRAFANA_IP} -qsummariser.influx.ip=${GRAFANA_IP}
+docker run --name jmeter-master-test -v ${LOGDIR}:/logs  -v $(dirname ${JMX_SCRIPT}):/scripts ${MASTER_IMAGE} sh ${JMTR_PATH}/bin/jmeter -n -t /scripts/$(basename ${JMX_SCRIPT}) -l /logs/${jmeter_resultsFile} -LDEBUG -R${SERVER_IPS} -GthreadMultiplier=${test_threadMultiplier} -GrampUp=${test_rampUp_Seconds} -GloopCount=${test_loopCount} -Gduration=${test_duration_Seconds} -GstartupDelay=${test_startupDelay_Seconds} -GgrafanaIP=${GRAFANA_IP} -qsummariser.influx.ip=${GRAFANA_IP}
 
 # stop all containers once the test is complete
 echo "STOPPING ALL THE CONTAINERS"
