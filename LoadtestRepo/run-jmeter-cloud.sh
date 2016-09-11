@@ -13,4 +13,4 @@ echo "grafana enabled choice is : ${3}"
 
 rm -rf logs.bak
 chmod 777 driver.sh
-./driver.sh -p ${1}/majoris.properties  -n ${2} -j ${JMTR_PATH} -g ${3}
+./driver.sh -p ${1}/majoris.properties  -n ${2} -j ${JMTR_PATH} -g ${3} -s ${1}
