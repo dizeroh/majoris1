@@ -68,7 +68,7 @@ do
                         java -jar ${JMTR_PATH}/lib/ext/cmdrunner-1.0.2.jar --tool Reporter --generate-png ${reports_location}reports/images/Throughput-${pageName}.png --input-jtl  ${logs_location}/temp_${jmeter_resultsFile} --plugin-type TransactionsPerSecond --width $graphs_width_Pixels --height $graphs_height_Pixels --aggregate-rows no --paint-gradient no --paint-zeroing yes --paint-markers yes
 
                         #generate page response time graphs
-                        java -jar ${JMTR_PATH}/lib/ext/cmdrunner-1.0.2.jar --tool Reporter --generate-png ${reports_location}reports/images/Page-${pageName}.png --input-jtl  ${logs_location}/temp_${jmeter_resultsFile} --plugin-type ResponseTimesOverTime --width $graphs_width_Pixels --height $graphs_height_Pixels --aggregate-rows no --paint-gradient no --paint-zeroing yes --paint-markers yes
+                        java -jar ${JMTR_PATH}/lib/ext/CMDRunner.jar --tool Reporter --generate-png ${reports_location}reports/images/Page-${pageName}.png --input-jtl  ${logs_location}/temp_${jmeter_resultsFile} --plugin-type ResponseTimesOverTime --width $graphs_width_Pixels --height $graphs_height_Pixels --aggregate-rows no --paint-gradient no --paint-zeroing yes --paint-markers yes
 
                         #Add images and their headings in html page
                         echo "<h3>$pageHeader</h3>" >> ${reports_location}reports/PageThroughputGraphs.html

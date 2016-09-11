@@ -49,7 +49,7 @@ ADD jmeter.properties /var/lib/jmeter/bin/
 #Replace ApacheJMeter_core-2.13.jar withe the custom jar ApacheJMeter_core.jar to get the custom counters for grafana
 RUN rm -f /var/lib/jmeter/lib/ext/ApacheJMeter_core-$JMETER_VERSION.jar
 ADD addons/ApacheJMeter_core.jar /var/lib/jmeter/lib/ext
-ADD addons/cmdrunner-1.0.2.jar /var/lib/jmeter/lib/ext
+ADD addons/CMDRunner.jar /var/lib/jmeter/lib/ext
 Add addons/jmeter-plugins-extras-libs-1.1.3.jar /var/lib/jmeter/lib/ext
 
 #Add user.properties for creating a database in grafana
