@@ -20,7 +20,7 @@ sh ${reports_location}reports/reportgenerator.sh $1
 
 #Generate graphs through jmeter-jenkins plugin. This portion of the code works only when you run the test from jenkins.
 sh ${reports_location}reports/perfaggrtrendgraphs.sh $1
-sh ${reports_location}reports/perftrendgraphs.sh $1
+.${reports_location}reports/perftrendgraphs.sh $1
 #sh ${reports_location}reports/perfpagegraphs.sh $1 #This graph disabled. Because perfpagegraphs.sh covers page graphs, throughput graphs and aggregate graphs.
 #sh ${reports_location}reports/genpageresponsetime.sh $1 #this code is disabled because, perfpagegraphs.sh will generate all the required graphs
 #copy all the files to the reports section to get onto Jenkins node
