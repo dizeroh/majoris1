@@ -1,4 +1,5 @@
 {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+{\colortbl ;\red0\green0\blue255;}
 {\*\generator Riched20 6.2.9200}\viewkind4\uc1 
 \pard\sa200\sl276\slmult1\f0\fs22\lang9\par
 sudo su jenkins -s /bin/bash\par
@@ -46579,6 +46580,12 @@ sh /shared-repo/generate-reports.sh /scripts\par
 -v $\{PWD\}/LoadtestRepo:/shared-repo \\\par
 -v $\{PWD\}/SampleApp/jmeter-tests:/scripts jmeter-docker \\\par
 sh /shared-repo/generate-reports.sh /scripts\par
+\par
+\b GET GRAFANA IP\b0\par
+JENKINS_LABEL_IP=$(hostname -I | awk '\{ print $1 \}')\par
+echo "ACCESS GRAFANA @ {{\field{\*\fldinst{HYPERLINK http://$\{JENKINS_LABEL_IP\}/dashboard/file/loadtest-dashboard.json }}{\fldrslt{http://$\{JENKINS_LABEL_IP\}/dashboard/file/loadtest-dashboard.json\ul0\cf0}}}}\f0\fs22 "\par
+\par
+$\{__P(grafanaIP,172.17.0.2)\}\par
 \par
 \par
 \par
