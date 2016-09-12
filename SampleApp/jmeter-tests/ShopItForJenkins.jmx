@@ -21,7 +21,7 @@
             </elementProp>
             <elementProp name="graphiteHost" elementType="Argument">
               <stringProp name="Argument.name">graphiteHost</stringProp>
-              <stringProp name="Argument.value">${__P(grafanaIP,172.17.0.2)}}</stringProp>
+              <stringProp name="Argument.value">${__P(grafanaIP,172.17.0.2)}</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="graphitePort" elementType="Argument">
