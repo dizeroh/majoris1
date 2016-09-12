@@ -24,7 +24,7 @@ do
 done
 
 #Generate csv ${reports_location}reports
-array=( AggregateReport SynthesisReport )
+array=( AggregateReport ) #SynthesisReport has exception to generate report
 
 for csvReport in "${array[@]}"
 do

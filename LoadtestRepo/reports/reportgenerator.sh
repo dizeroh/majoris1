@@ -19,7 +19,7 @@ cd ${CURR_DIR}
 chmod 777 ${reports_location}reports/perfpagegraphs.sh
 .${reports_location}reports/perfpagegraphs.sh $1
 sh ${reports_location}reports/genjmdownloads.sh $1 
-sh ${reports_location}reports/csv2htmlsynth.sh $1 
+#sh ${reports_location}reports/csv2htmlsynth.sh $1 # Synthesis report got exception. So removed.
 sh ${reports_location}reports/csv2htmlaggr.sh $1
 
 ls -l reports/

@@ -14,7 +14,7 @@ echo "<body>" >> ${reports_location}reports/PerformanceTrendGraphs.html
 echo "<h1><b>Performance trend graphs for each page</b></h1>" >> ${reports_location}reports/PerformanceTrendGraphs.html
 echo "<div class=\"images\">" >> ${reports_location}reports/PerformanceTrendGraphs.html
 
-length=$(cat ${reports_location}reports/images/SynthesisReportGui.csv | wc -l)
+length=$(cat ${reports_location}reports/images/AggregateReportGui.csv | wc -l)
 while read line
 do
 	if  [ $count != 1 ] && [ `expr $length` -ne $count ]
@@ -38,8 +38,8 @@ do
 		echo "<img src=\"images/Trend-$pageName.png\" tooltip=\"$pageHeader\"/>" >> ${reports_location}reports/PerformanceTrendGraphs.html 
 	fi	
 	((count++))
-done < ${reports_location}reports/images/SynthesisReportGui.csv
+done < ${reports_location}reports/images/AggregateReportGui.csv
 echo "</div>" >> ${reports_location}reports/PerformanceTrendGraphs.html
 echo "</body>" >> ${reports_location}reports/PerformanceTrendGraphs.html
 echo "</html>" >> ${reports_location}reports/PerformanceTrendGraphs.html
-#awk -F '[,]' '{for(i=1;i<12;i++) {print $i;}}' SynthesisReportGui.csv > ${reports_location}reports/PerformanceTrendGraphs.html
+#awk -F '[,]' '{for(i=1;i<12;i++) {print $i;}}' AggregateReportGui.csv > ${reports_location}reports/PerformanceTrendGraphs.html
