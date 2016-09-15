@@ -1,6 +1,6 @@
 FROM fedora:23
 
-MAINTAINER Srinivasa Bittla <srinivasa.bittla@citrix.com>
+MAINTAINER Dizer OH <dizer.oh@gmail.com>
 
 # package installation
 RUN dnf update -qy && \

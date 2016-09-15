@@ -20,7 +20,8 @@ chmod 777 ${reports_location}reports/perfpagegraphs.sh
 .${reports_location}reports/perfpagegraphs.sh $1
 sh ${reports_location}reports/genjmdownloads.sh $1 
 #sh ${reports_location}reports/csv2htmlsynth.sh $1 # Synthesis report got exception. So removed.
-sh ${reports_location}reports/csv2htmlaggr.sh $1
+chmod 777 ${reports_location}reports/csv2htmlaggr.sh
+.${reports_location}reports/csv2htmlaggr.sh $1 #to make count++ work properly changed the files to run with . command
 
 ls -l reports/
 

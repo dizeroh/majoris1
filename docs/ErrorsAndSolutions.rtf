@@ -46585,8 +46585,12 @@ sh /shared-repo/generate-reports.sh /scripts\par
 JENKINS_LABEL_IP=$(hostname -I | awk '\{ print $1 \}')\par
 echo "ACCESS GRAFANA @ {{\field{\*\fldinst{HYPERLINK http://$\{JENKINS_LABEL_IP\}/dashboard/file/loadtest-dashboard.json }}{\fldrslt{http://$\{JENKINS_LABEL_IP\}/dashboard/file/loadtest-dashboard.json\ul0\cf0}}}}\f0\fs22 "\par
 \par
+\b GRAFANA IP ADDRESS NEED TO BE ADDED IN JMETER SCRIPT FOR THE BACK END LISTENER AS\b0\par
 $\{__P(grafanaIP,172.17.0.2)\}\par
-\par
+$\{__P(rampUp,0)\}\par
+$\{__P(loopCount,0)\}\par
+$\{__P(duration,0)\}\par
+$\{__P(startupDelay,0)\}\par
 \par
 \par
 }
