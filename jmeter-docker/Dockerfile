@@ -62,6 +62,6 @@ VOLUME ["/data"]
 VOLUME ["/logs"]
 VOLUME [ "/reports" ]
 
-# Expose jmeter-server's port (specified in jmeter.properties.)  HTTPS port -443, influxdb - 8083 8086 8088 8091,  graphite port-2003
-EXPOSE 1099 60000 443 8083 8086 8088 8091 2003
+# Expose jmeter-server's port (specified in jmeter.properties.)  Expose JMeter port - 8080 HTTPS port -443, influxdb - 8083 8086 8088 8091,  graphite port-2003
+EXPOSE 8080 1099 60000 443 8083 8086 8088 8091 2003
 
